@@ -3,7 +3,7 @@
 ### Процессор инструментальной платформы
 
 ### Название установленного дистрибутива, его версия
-<img src="/img/logo.png" alt="manajro" width="48"/> __Manjaro Linux__ with kernel __4.19.69-1-MANJARO__
+<img src="/img/logo.png" alt="manajro" width="24"/> __Manjaro Linux__ with kernel __4.19.69-1-MANJARO__
 ### Используемый менеджер окон
 
 ### Сложности, возникшие при создании инструментальной платформы, и способы их преодоления
