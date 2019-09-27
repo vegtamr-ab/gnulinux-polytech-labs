@@ -5,7 +5,7 @@
 ### Название установленного дистрибутива, его версия
 <img src="/img/logo.png" alt="manajro" width="24"/> __Manjaro Linux__ with kernel __4.19.69-1-MANJARO__
 ### Используемый менеджер окон
-
+<img src="/img/awlogo.png" alt="awesome" width="24"/> __Awesome__
 ### Сложности, возникшие при создании инструментальной платформы, и способы их преодоления
 
 
