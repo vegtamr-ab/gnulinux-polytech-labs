@@ -2,7 +2,8 @@
 
 INVARGS="Invalid arguments. Aborting..."
 
-if [ -z $1 ]; then
+if [ -z $1 ];
+then
   echo "$INVARGS"
 fi
 
@@ -25,7 +26,8 @@ do
       ;;
     '/')
       eq0=$(echo "$2 == 0" | bc)
-      if [ $eq0 -eq 1 ]; then
+      if [ $eq0 -eq 1 ];
+      then
         echo "$INVARGS"
         exit
       fi
