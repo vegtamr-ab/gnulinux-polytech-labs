@@ -11,11 +11,12 @@ then
   exit
 fi
 
+diamond=""
 spaces=1
 for ((i = 1; i <= $halved; i++))
 do
   str=""
-  j=$(($(echo "$1 - $spaces" | bc) / 2))
+  j=$(($(($1 - $spaces)) / 2))
   for ((k = 1; k <= $j; k++))
   do
     str=$str"p"
@@ -26,7 +27,7 @@ do
     str=$str"*p"
   done
 
-  echo $str | sed 's/p/ /g'
+  diamond=$diamond$str"n"
   spaces=$(($spaces + 2))
 done
 
@@ -35,7 +36,7 @@ spaces=$(($spaces - 4))
 for ((i = $(($halved + 1)); i <= $1; i++))
 do
   str=""
-  j=$(($(echo "$1 - $spaces" | bc) / 2))
+  j=$(($(($1 - $spaces)) / 2))
   for ((k = 1; k <= $j; k++))
   do
     str=$str"p"
@@ -46,6 +47,8 @@ do
     str=$str"*p"
   done
 
-  echo $str | sed 's/p/ /g'
+  diamond=$diamond$str"n"
   spaces=$(($spaces - 2))
 done
+
+echo $diamond | sed 's/p/ /g' | sed 's/n/\n/g'
