@@ -16,10 +16,7 @@ do
   while [[ $1 != "+" ]] && [[ $1 != "-" ]] && [[ $# -gt 1 ]];
   do
     case $1 in
-      'x')
-        res=$(echo "$res * $2" | bc)
-        ;;
-      'X')
+      'x'|'X')
         res=$(echo "$res * $2" | bc)
         ;;
       '/')
