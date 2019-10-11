@@ -5,7 +5,7 @@ INVARGS="Invalid arguments. Aborting..."
 modula=$(($1 % 2))
 halved=$(($1 / 2 + 1))
 
-if [[ -z $1 ]] || [[ $(echo "$1 % 2" | bc) -eq 0 ]];
+if [[ -z $1 ]] || [[ $modula eq 0 ]];
 then
   echo "$INVARGS"
   exit
