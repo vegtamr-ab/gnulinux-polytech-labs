@@ -42,7 +42,7 @@ do
   elif [ $# -lt 1 ];
   then
     simple[$count]=$res
-    count=$(echo "$count + 1" | bc)
+    count=$(($count + 1))
     break
   fi
 
@@ -56,8 +56,8 @@ do
   fi
 
   simple[$count]=$res
-  simple[$(echo "$count + 1" | bc)]=$1
-  count=$(echo "$count + 2" | bc)
+  simple[$(($count + 1))]=$1
+  count=$(($count + 2))
   if [ $# -gt 1 ];
   then
     shift 1
@@ -69,8 +69,8 @@ res=${simple[0]}
 i=1;
 while [ $i -lt $count ];
 do
-  res=$(echo "$res ${simple[$i]} ${simple[$(echo "$i + 1" | bc)]}" | bc)
-  i=$(echo "$i + 2" | bc)
+  res=$(echo "$res ${simple[$i]} ${simple[$(($i + 1))]}" | bc)
+  i=$(($i + 2))
 done
 
 echo $res
