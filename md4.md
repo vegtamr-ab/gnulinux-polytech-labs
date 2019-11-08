@@ -6,7 +6,7 @@
 |---------|---------|---------|---------|---------|
 | 61,523s | 20,430s | 15,481s | 16,572s | 14,375s |
 
-| -O2 -march=native | -O3 -march=native | -O2 -march=native -funroll-loops | -O3 -march=native -funroll-loops |
+| -O2 <br> -march=native | -O3 -march=native | -O2 -march=native -funroll-loops | -O3 -march=native -funroll-loops |
 |-------------------|-------------------|----------------------------------|----------------------------------|
 |      14,169s      |      14,046s      |             13,624s              |              12,292s             |
 
