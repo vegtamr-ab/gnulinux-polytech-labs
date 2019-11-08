@@ -15,9 +15,9 @@
   * L3$ - __6 MiB__ - 4x1.5 MiB
 8. __Связность кэш-памяти последнего уровня__ - Общая для всех 4 ядер (_Intel® Smart Cache_)
 ### Название установленного дистрибутива, его версия
-<img src="/img/logo.png" alt="manajro" width="24"/> __Manjaro Linux__ with kernel __4.19.69-1-MANJARO__
+<img src="lab1/img/logo.png" alt="manajro" width="24"/> __Manjaro Linux__ with kernel __4.19.69-1-MANJARO__
 ### Используемый менеджер окон
-<img src="/img/awlogo.png" alt="awesome" width="24"/> __Awesome__
+<img src="lab1/img/awlogo.png" alt="awesome" width="24"/> __Awesome__
 ### Сложности, возникшие при создании инструментальной платформы, и способы их преодоления
 Основные сложности возникли при конфигурации инструментальной системы для максимально удобной работы с ней.
 * Конфигурация тегов __Awesome WM__ - использование дополнения __Tyrannical__ для изменения конфигурации тегов.
