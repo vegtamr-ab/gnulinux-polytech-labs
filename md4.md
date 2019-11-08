@@ -10,3 +10,11 @@
 ```bash
 -O3 -march=native -funroll-loops
 ```
+
+### С межпроцедурной оптимизацией и оптимизацией времени компоновки
+```bash
+g++ -Wall -march=native -O3 -funroll-loops -flto -fipa-profile opt-this.cpp -o prg.veg
+time ./prg.veg
+
+./prg.veg 13,37s
+```
