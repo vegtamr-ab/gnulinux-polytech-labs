@@ -58,7 +58,7 @@ __Итог _fprofile-generate_ - 13,19s__
 g++ -Wall -march=native -O3 -funroll-loops -flto -fipa-profile -fprofile-use opt-this.cpp -o prg.veg
 time ./prg.veg
 
-./prg.veg 13,35s
+./prg.veg 12,56s
 ```
 
-__Итог _fprofile-use_ - 13,35s__
+__Итог _fprofile-use_ - 12,56s__
