@@ -1,0 +1,1 @@
+cmd_/home/vegtamr/polytech/linux/md-gnulinux-reports/lab6/test_module/startstop.o := ld -m elf_x86_64  -z max-page-size=0x200000    -r -o /home/vegtamr/polytech/linux/md-gnulinux-reports/lab6/test_module/startstop.o /home/vegtamr/polytech/linux/md-gnulinux-reports/lab6/test_module/start.o /home/vegtamr/polytech/linux/md-gnulinux-reports/lab6/test_module/stop.o 
