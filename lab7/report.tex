@@ -1,0 +1,210 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage{wrapfig}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{color}
+\usepackage[dvipsnames]{xcolor}
+%Russian-specific packages
+%--------------------------------------
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian, english]{babel}
+%--------------------------------------
+
+\title{Отчёт по лабораторной работе №7 по дисциплине GNU/Linux}
+\author{Андрей Бареков}
+\date{\today}
+
+\lstdefinestyle{mycode}{
+    backgroundcolor=\color{White},   
+    commentstyle=\color{ForestGreen},
+    keywordstyle=\color{Blue},
+    numberstyle=\tiny\color{Maroon},
+    stringstyle=\color{Plum},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstdefinestyle{diffred}{
+    backgroundcolor=\color{Salmon},   
+    commentstyle=\color{ForestGreen},
+    keywordstyle=\color{Blue},
+    numberstyle=\tiny\color{Maroon},
+    stringstyle=\color{Plum},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstdefinestyle{diffgreen}{
+    backgroundcolor=\color{SpringGreen},   
+    commentstyle=\color{ForestGreen},
+    keywordstyle=\color{Blue},
+    numberstyle=\tiny\color{Maroon},
+    stringstyle=\color{Plum},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\begin{document}
+\maketitle
+\newpage
+
+\section{Цель работы}
+  Реализовать драйвер простого устройства в виде модуля ядра и подключить его на уровне ядра.
+
+\section{Задачи}
+  \begin{enumerate}
+    \item Ознакомиться с представленным материалом.
+    \item Исправить ошибки.
+    \item Скомпилировать драйвер как модуль ядра.
+    \item Подключить драйвер как модуль на уровне ядра.
+    \item Продемонстрировать корректную работу драйвера.
+  \end{enumerate}
+
+\newpage
+\section{Ход работы}
+  \subsection{Исправление ошибок}
+
+    Удалён макрос \textbf{PREPARE WORK}.
+    У \textbf{INIT WORK} изменилась сигнатура, поэтому в эту функцию
+    передается структура.
+
+    \lstset{style=diffred}
+    \begin{lstlisting}[language = C++]
+    irqreturn_t irq_handler(int irq, void *dev_id, struct pt_regs *regs)
+    {
+      static int initialised = 0;
+      static unsigned char scancode;
+      static struct work_struct task;
+      unsigned char status;
+
+      status = inb(0x64);
+      scancode = inb(0x60);
+
+      if (initialised == 0) {
+        INIT_WORK(&task, got_char, &scancode);
+        initialised = 1;
+      } else {
+        PREPARE_WORK(&task, got_char, &scancode);
+      }
+
+      queue_work(my_workqueue, &task);
+
+      return IRQ_HANDLED;
+    }
+    \end{lstlisting}
+
+    \lstset{style=diffgreen}
+    \begin{lstlisting}[language = C++]
+    irqreturn_t irq_handler(int irq, void *dev_id, struct pt_regs *regs)
+    {
+      static struct work_struct task;
+      unsigned char status;
+      static unsigned char scancode;
+
+      status = inb(0x64);
+      scancode = inb(0x60);
+      got_char(&scancode);
+
+      INIT_WORK(&task, (work_func_t)got_char);
+      queue_work(my_workqueue, &task);
+
+      return IRQ_HANDLED;
+    }
+    \end{lstlisting}
+
+    Изменилось название флага \textbf{SA SHIRQ} на \textbf{IRQF SHARED}.
+
+    \lstset{style=diffred}
+    \begin{lstlisting}[language = C++]
+    return request_irq(1, irq_handler, SA_SHIRQ,
+      "test_keyboard_irq_handler", (void *)(irq_handler));
+    \end{lstlisting}
+
+    \lstset{style=diffgreen}
+    \begin{lstlisting}[language = C++]
+    return request_irq(1, irq_handler, IRQF_SHARED,
+      "test_keyboard_irq_handler", (void *)(irq_handler));
+    \end{lstlisting}
+
+  \lstset{style=mycode}
+  \subsection{Компиляция}
+    В папке с исходным кодом модуля создается \textbf{Makefile} для
+    сборки модуля:
+
+    \begin{lstlisting}
+    obj-m += interrupt-handler.o
+    \end{lstlisting}
+
+    Компилируется драйвер как модуль ядра, приведен пример для Arch-подобных систем:
+
+    \begin{lstlisting}[language = bash]
+    sudo make -C /lib/modules/`uname -r`/build M=$PWD modules
+    \end{lstlisting}
+
+  \subsection{Подключение драйвера как модуля на уровне ядра}
+
+    Драйвер подключается командой:
+    \begin{lstlisting}[language = bash]
+    sudo insmod interrupt-handler.ko
+    \end{lstlisting}
+
+    Чтобы не повредить файловую систему, открывается новый эмулятор терминала
+    и вводится команда, которая перезагрузит систему через определенный отрезок времени:
+    \begin{lstlisting}[language = bash]
+    shutdown -r 120
+    \end{lstlisting}
+
+  \subsection{Проверка корректности работы модуля}
+
+    После нажатия клавиш, в логи ядра записываются их скан коды.
+    Открывается файл логгирования ядра:
+    \begin{lstlisting}[language = bash]
+    sudo dmesg
+    \end{lstlisting}
+
+    И показывается корректность работы драйвера:
+    \begin{lstlisting}
+    Scan Code 34 Pressed.
+    Scan Code 34 Released.
+    Scan Code 56 Pressed.
+    Scan Code 56 Released.
+    Scan Code 71 Pressed.
+    Scan Code 71 Released.
+    \end{lstlisting}
+
+\section{Выводы}
+  Был реализован и подключен драйвер в виде модуля на уровне ядра.
+  В процессе достижения данной цели, были исправлены ошибки в коде
+  обработчика прерываний, скомпилирован, подключен драйвер и показана
+  его корректная работа.
+
+\end{document}
