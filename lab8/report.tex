@@ -1,0 +1,151 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage{wrapfig}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{color}
+\usepackage[dvipsnames]{xcolor}
+%Russian-specific packages
+%--------------------------------------
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian, english]{babel}
+%--------------------------------------
+
+\title{Отчёт по лабораторной работе №8 по дисциплине GNU/Linux}
+\author{Андрей Бареков}
+\date{\today}
+
+\lstdefinestyle{mycode}{
+    backgroundcolor=\color{White},   
+    commentstyle=\color{ForestGreen},
+    keywordstyle=\color{Blue},
+    numberstyle=\tiny\color{Maroon},
+    stringstyle=\color{Plum},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    frame=single,
+    tabsize=2,
+}
+
+\begin{document}
+\maketitle
+\newpage
+\lstset{style=mycode}
+
+\section{Задание}
+  Драйвер поддерживает чтение и запись сообщений в него через существующие утилиты POSIX:
+    \begin{lstlisting}
+echo "message text_message" > /dev/chardev
+    \end{lstlisting}
+  Хранит только одно сообщение. Поддерживает функцию удаления сообщения: \textit{msg\_delete}.
+
+\section{Цель работы}
+  Реализовать и подключить драйвер, соответствующий требованиям, указанным в задании.
+
+\section{Задачи}
+  \begin{enumerate}
+    \item Написать код драйвера.
+    \item Собрать драйвер.
+    \item Подключить драйвер.
+    \item Проверить правильность работы драйвера.
+  \end{enumerate}
+
+\section{Платформы}
+  \subsection{Аппаратная платформа}
+    CPU: Intel i5-8250U (8) @ 3.400GHz
+
+  \subsection{Программная платформа}
+    OS: Linux Manjaro x86\_64
+
+\newpage
+\section{Ход работы}
+  \subsection{Реализация драйвера}
+    Для удобства код драйвера был разделён на модули:
+    \begin{itemize}
+      \item \textbf{chardev.h} - основной модуль, в котором содержится документация драйвера
+      \item \textbf{initialize.c} - модуль с инициализацией и деинициализацией драйвера
+      \item \textbf{open.c} - модуль с открытием драйвера
+      \item \textbf{release.c} - модуль с закрытием драйвера
+      \item \textbf{read.c} - модуль с чтением
+      \item \textbf{write.c} - модуль с записью
+    \end{itemize}
+    Код модулей приведён в приложении.
+
+  \subsection{Сборка и подключение модуля}
+    Создан \textbf{Makefile}:
+    \lstinputlisting[language = bash]{driver/Makefile}
+
+    Сборка модуля и подключение:
+    \begin{lstlisting}
+sudo make -C /lib/modules/`uname -r`/build M=$PWD modules
+sudo insmod chardev.ko
+
+##DMESG##
+[45189.952399] SUCCESS: Registered the major device 235
+[45189.952407] Please, create a device file to interact with the driver. Use:
+[45189.952408] mknod chardev c 235 0
+    \end{lstlisting}
+    \newpage
+
+  \subsection{Проверка корректности работы}
+    Создан файл устройства для взаимодействия с драйвером:
+    \begin{lstlisting}
+sudo mknod chardev c 235 0
+    \end{lstlisting}
+
+    Проверка:
+    \begin{lstlisting}
+su 
+cd /dev
+echo "message message" > chardev
+cat chardev
+##RES## : message
+echo "direction back" > chardev
+cat chardev
+##RES## : egassem
+echo "direction back" > chardev
+cat chardev
+##RES## : message
+echo "msg_delete" > chardev
+cat chardev
+##RES## :
+
+##DMESG##
+[45190.112732] Message has been written
+[45190.112733] Read 5 bytes, 101207 left
+[45190.112734] Forwards direction
+[45190.112735] Read 5 bytes, 101207 left
+[45190.112736] Backwards direction
+[45190.112737] Read 5 bytes, 101207 left
+[45190.112738] Message has been deleted
+    \end{lstlisting}
+
+\section{Выводы}
+  В ходе работы был реализован и подключен драйвер.
+  Взаимодействие с драйвером таким образом эффективно, поскольку можно взаимодействовать с ним, не изменяя код.
+  \newpage
+
+\section{Приложение}
+  \subsection{Исходный код модуля chardev.h}
+    \lstinputlisting[language = C]{driver/chardev.h}
+  \subsection{Исходный код модуля initalize.c}
+    \lstinputlisting[language = C]{driver/initialize.c}
+  \subsection{Исходный код модуля open.c}
+    \lstinputlisting[language = C]{driver/open.c}
+  \subsection{Исходный код модуля release.c}
+    \lstinputlisting[language = C]{driver/release.c}
+  \subsection{Исходный код модуля read.c}
+    \lstinputlisting[language = C]{driver/read.c}
+  \subsection{Исходный код модуля write.c}
+    \lstinputlisting[language = C]{driver/write.c}
+
+\end{document}
