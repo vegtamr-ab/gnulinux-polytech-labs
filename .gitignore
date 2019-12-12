@@ -1,0 +1,10 @@
+*.fls
+*.log
+*.fdb_latexmk
+*.aux
+*.ko*
+*.o*
+*.mod*
+
+lab6/.config
+lab5.1/linux52
